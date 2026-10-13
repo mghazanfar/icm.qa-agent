@@ -4,9 +4,9 @@
 
 [build.environment]
   # These are plain config values (branch name, workflow filename, dashboard
-  # username), not secrets. Their defaults appear literally in source and docs,
+  # username, repo name), not secrets. Their defaults appear literally in source and docs,
   # which trips Netlify's secrets scanner.
-  SECRETS_SCAN_OMIT_KEYS = "RESULTS_BRANCH,WORKFLOW_FILE,DASHBOARD_USER"
+  SECRETS_SCAN_OMIT_KEYS = "RESULTS_BRANCH,WORKFLOW_FILE,DASHBOARD_USER,GITHUB_REPO"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
