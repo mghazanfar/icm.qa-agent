@@ -11,7 +11,8 @@ export default function RunButton({ url, all, label }: { url?: string; all?: boo
     try {
       const r = await fetch("/api/run", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(all ? { all: true } : { url }) });
       const j = await r.json();
-      setMsg(j.ok ? `${j.message} Results appear here when it finishes (a few minutes).` : j.error);
+      setMsg(j.ok ? `${j.message} Progress shows at the top of the page.` : j.error);
+      if (j.ok) window.dispatchEvent(new Event("qa-run-queued"));
     } catch {
       setMsg("Could not reach the server.");
     }

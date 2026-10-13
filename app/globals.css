@@ -142,3 +142,27 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 .sched-ok { color: var(--green-text); font-weight: 600; } .sched-err { color: #B02F2F; font-weight: 600; }
 .btn.outline { background: #fff; border-color: var(--line); color: var(--ink); } .btn.outline:hover { border-color: var(--pass); }
 .btn:disabled { opacity: .45; cursor: not-allowed; }
+
+/* live run banner */
+.live { background: linear-gradient(135deg, #f1fdf1, #fff); border: 1px solid #b9ecb9; border-left: 4px solid var(--glow); border-radius: 12px; padding: 14px 16px; margin-bottom: 16px; box-shadow: 0 4px 14px rgba(10, 143, 30, .08); }
+.live-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.live-meta { color: var(--muted); font-size: 13px; }
+.live-link { margin-left: auto; font-weight: 600; font-size: 13px; }
+.live-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--glow); box-shadow: 0 0 0 0 rgba(58, 230, 58, .6); animation: livepulse 1.6s infinite; }
+@keyframes livepulse { 70% { box-shadow: 0 0 0 10px rgba(58, 230, 58, 0); } 100% { box-shadow: 0 0 0 0 rgba(58, 230, 58, 0); } }
+.live-bar { height: 10px; border-radius: 99px; background: #e3eee3; overflow: hidden; margin: 12px 0 8px; }
+.live-bar i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--green-text), var(--glow)); transition: width 1s ease; background-size: 200% 100%; animation: liveflow 2.2s linear infinite; }
+@keyframes liveflow { from { background-position: 0 0; } to { background-position: -200% 0; } }
+.live-foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px 12px; font-size: 13px; color: var(--muted); }
+.live.done.ok { border-left-color: var(--pass); } .live.done.bad { border-left-color: #C62828; background: #fff5f5; border-color: #f0b8b8; }
+@media (prefers-reduced-motion: reduce) { .live-dot, .live-bar i { animation: none; } }
+
+.live-steps { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 8px; }
+.live-steps li { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; padding: 4px 10px; border-radius: 99px; background: #f1f5f1; color: var(--muted); border: 1px solid transparent; }
+.live-steps .st-ico { font-size: 11px; width: 12px; text-align: center; }
+.live-steps .st-done { background: #e1f6e1; color: var(--green-text); }
+.live-steps .st-active { background: #fff; border-color: var(--glow); color: var(--ink); font-weight: 600; }
+.live-steps .st-active .st-ico { color: var(--green-text); animation: livepulse2 1.2s ease-in-out infinite; }
+.live-steps .st-failed { background: #C62828; color: #fff; }
+@keyframes livepulse2 { 50% { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .live-steps .st-active .st-ico { animation: none; } }

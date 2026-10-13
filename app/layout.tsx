@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import RunButton from "@/components/RunButton";
 import NavLinks from "@/components/NavLinks";
+import LiveRunBanner from "@/components/LiveRunBanner";
 import { LOGO_URL, SHEET_URL } from "@/lib/config";
 
 export const metadata: Metadata = { title: "LP QA Dashboard", description: "IC Markets landing-page QA results" };
@@ -28,7 +29,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <RunButton all label="Run full sheet" />
           </div>
         </header>
-        <main id="main">{children}</main>
+        <main id="main">
+          <LiveRunBanner />
+          {children}
+        </main>
         <footer className="foot">IC Markets LP QA · internal tool · times are Dubai time (GST)</footer>
       </body>
     </html>
