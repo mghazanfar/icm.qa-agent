@@ -3,7 +3,7 @@ import path from "path";
 
 export type Schedule = { days: number[]; updatedAt?: string; updatedBy?: string };
 export const DEFAULT_DAYS = [1, 3, 5]; // Mon, Wed, Fri (ISO weekday: 1 = Monday ... 7 = Sunday)
-export const RUN_TIME_UTC = "09:00";   // fixed by the cron line in .github/workflows/qa-agent.yml
+export const RUN_TIME_UTC = "04:00";   // fixed by the cron line in .github/workflows/qa-agent.yml
 
 const REPO = () => process.env.GITHUB_REPO || "ICMarkets/icm.qa-agent";
 const BRANCH = () => process.env.RESULTS_BRANCH || "main";

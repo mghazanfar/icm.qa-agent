@@ -4,7 +4,7 @@ import { fmtDateTime } from "@/lib/format";
 
 const NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const DEFAULT = [1, 3, 5];
-const HOUR_UTC = 9; // matches the cron line in the workflow
+const HOUR_UTC = 4; // matches the cron line in the workflow (04:00 UTC = 08:00 Dubai)
 
 function nextRun(days: number[]): string | null {
   if (!days.length) return null;
