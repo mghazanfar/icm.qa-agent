@@ -1,16 +1,16 @@
 const TZ = "Asia/Dubai";
 const dtf = new Intl.DateTimeFormat("en-GB", {
-  timeZone: TZ, day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true,
+  timeZone: TZ, weekday: "long", day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true,
 });
 
-/** "02 December 2026 12:12PM" in Dubai time (GST). */
+/** "Wednesday, 02 December 2026 12:12PM" in Dubai time (GST). */
 export function fmtDateTime(iso: string | null | undefined): string {
   if (!iso) return "–";
   const d = new Date(iso);
   if (isNaN(d.getTime())) return "–";
   const p: Record<string, string> = {};
   for (const x of dtf.formatToParts(d)) p[x.type] = x.value;
-  return `${p.day} ${p.month} ${p.year} ${p.hour}:${p.minute}${(p.dayPeriod || "").toUpperCase()}`;
+  return `${p.weekday}, ${p.day} ${p.month} ${p.year} ${p.hour}:${p.minute}${(p.dayPeriod || "").toUpperCase()}`;
 }
 
 /** Seconds between two ISO timestamps, or null. */
@@ -28,4 +28,11 @@ export function fmtDuration(startIso: string, endIso: string): string {
   if (h > 0) return `${h}h ${String(m).padStart(2, "0")}m`;
   if (m > 0) return `${m}m ${String(sec).padStart(2, "0")}s`;
   return `${sec}s`;
+}
+
+const dtShort = new Intl.DateTimeFormat("en-GB", { timeZone: TZ, day: "2-digit", month: "short" });
+/** "13 Oct" in Dubai time, for chart axes. */
+export function fmtShortDay(iso: string): string {
+  const d = new Date(iso);
+  return isNaN(d.getTime()) ? "–" : dtShort.format(d);
 }

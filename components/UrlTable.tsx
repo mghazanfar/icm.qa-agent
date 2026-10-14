@@ -58,6 +58,7 @@ export default function UrlTable({ rows, title = "All URLs" }: { rows: Row[]; ti
   const [entity, setEntity] = useState("");
   const [lang, setLang] = useState("");
   const [status, setStatus] = useState("");
+  const [check, setCheck] = useState("");
   const [open, setOpen] = useState<Set<string>>(new Set());
   const uniq = (f: (r: Row) => string) => [...new Set(rows.map(f))].sort();
   const keyOf = (r: Row, i: number) => r.url + "|" + r.language + "|" + i;
@@ -65,9 +66,15 @@ export default function UrlTable({ rows, title = "All URLs" }: { rows: Row[]; ti
     () => rows.map((r, i) => ({ r, key: keyOf(r, i) })).filter(({ r }) =>
       (!q || (r.label + r.url).toLowerCase().includes(q.toLowerCase())) && (!entity || r.entity === entity) &&
       (!lang || r.language === lang) &&
-      (!status || (status === "warn" ? hasWarn(r) : r.status === status))),
-    [rows, q, entity, lang, status],
+      // with a check chosen, the status filter is about that check (default: where it failed)
+      (check ? (r.checks[check]?.status ?? "skip") === (status || "fail") : !status || (status === "warn" ? hasWarn(r) : r.status === status))),
+    [rows, q, entity, lang, status, check],
   );
+  const checkOptions = CHECK_ORDER.filter((k) => rows.some((r) => r.checks[k])).map((k) => ({
+    k, fails: rows.filter((r) => r.checks[k]?.status === "fail").length,
+  }));
+  const filtered = !!(q || entity || lang || status || check);
+  const clear = () => { setQ(""); setEntity(""); setLang(""); setStatus(""); setCheck(""); };
   const toggle = (k: string) => setOpen((s) => { const n = new Set(s); if (n.has(k)) n.delete(k); else n.add(k); return n; });
 
   return (
@@ -77,7 +84,15 @@ export default function UrlTable({ rows, title = "All URLs" }: { rows: Row[]; ti
         <input aria-label="Search product or URL" placeholder="Search product or URL…" value={q} onChange={(e) => setQ(e.target.value)} />
         <select aria-label="Regulator" value={entity} onChange={(e) => setEntity(e.target.value)}><option value="">All regulators</option>{uniq((r) => r.entity).map((v) => <option key={v}>{v}</option>)}</select>
         <select aria-label="Language" value={lang} onChange={(e) => setLang(e.target.value)}><option value="">All languages</option>{uniq((r) => r.language).map((v) => <option key={v}>{v}</option>)}</select>
-        <select aria-label="Status" value={status} onChange={(e) => setStatus(e.target.value)}><option value="">All statuses</option><option value="fail">Failing</option><option value="pass">Passing</option><option value="warn">Passed with notes</option></select>
+        <select aria-label="Check" value={check} onChange={(e) => setCheck(e.target.value)}>
+          <option value="">All checks</option>
+          {checkOptions.map(({ k, fails }) => <option key={k} value={k}>{CHECK_LABELS[k] ?? k} ({fails} failing)</option>)}
+        </select>
+        <select aria-label="Status" value={status} onChange={(e) => setStatus(e.target.value)}>
+          <option value="">{check ? "Failing (default)" : "All statuses"}</option>
+          <option value="fail">Failing</option><option value="pass">Passing</option><option value="warn">Passed with notes</option>
+        </select>
+        {filtered && <button type="button" className="btn" style={{ border: "1px solid var(--line)", background: "#fff", color: "var(--ink)" }} onClick={clear}>Clear filters</button>}
       </div>
       <Legend />
       <div className="scroll">

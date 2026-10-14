@@ -1,19 +1,16 @@
 import Link from "next/link";
-import { FailsByCheck, LcpTrend, PassFailBars, TrendChart } from "@/components/Charts";
+import ChartsPanel from "@/components/ChartsPanel";
 import UrlTable from "@/components/UrlTable";
 import ScheduleCard from "@/components/ScheduleCard";
 import { readSchedule } from "@/lib/schedule";
 import { ProportionBar, TzNote } from "@/components/StatusBits";
 import { checkSource, getIndex, getLatestFull, getRuns } from "@/lib/data";
 import { SHEET_URL } from "@/lib/config";
-import { fmtDateTime, fmtDuration } from "@/lib/format";
+import { fmtDateTime, fmtDuration, fmtShortDay } from "@/lib/format";
 import { CHECK_LABELS } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
-const shortDay = (iso: string) => {
-  const s = fmtDateTime(iso).split(" ");
-  return `${s[0]} ${s[1].slice(0, 3)}`;
-};
+const shortDay = fmtShortDay;
 
 export default async function Overview() {
   const schedule = await readSchedule();
@@ -38,9 +35,9 @@ export default async function Overview() {
     );
   }
   const fullRuns = index.filter((r) => r.mode === "all");
-  const trend = fullRuns.slice(-30).map((r) => ({ date: shortDay(r.startedAt), when: fmtDateTime(r.startedAt), passRate: Math.round((r.passed / r.total) * 1000) / 10, failed: r.failed }));
-  const lcpTrend = fullRuns.slice(-30).map((r) => ({ date: shortDay(r.startedAt), when: fmtDateTime(r.startedAt), lcp: r.medianLcp ? Math.round(r.medianLcp / 100) / 10 : null }));
-  const fails = Object.entries(latest.checkFails ?? {}).map(([k, v]) => ({ name: CHECK_LABELS[k] ?? k, fails: v })).sort((a, b) => b.fails - a.fails);
+  const trend = fullRuns.slice(-30).map((r) => ({ id: r.id, date: shortDay(r.startedAt), when: fmtDateTime(r.startedAt), passRate: Math.round((r.passed / r.total) * 1000) / 10, failed: r.failed }));
+  const lcpTrend = fullRuns.slice(-30).map((r) => ({ id: r.id, date: shortDay(r.startedAt), when: fmtDateTime(r.startedAt), lcp: r.medianLcp ? Math.round(r.medianLcp / 100) / 10 : null }));
+  const fails = Object.entries(latest.checkFails ?? {}).map(([k, v]) => ({ key: k, name: CHECK_LABELS[k] ?? k, fails: v })).sort((a, b) => b.fails - a.fails);
   const bars = (o?: Record<string, { total: number; failed: number }>) =>
     Object.entries(o ?? {}).map(([name, v]) => ({ name, passed: v.total - v.failed, failed: v.failed })).sort((a, b) => a.name.localeCompare(b.name));
 
@@ -101,12 +98,7 @@ export default async function Overview() {
         <div className="card kpi"><h2>Runs recorded</h2><div className="v">{index.length}</div><div className="s">{fullRuns.length} full-sheet</div></div>
       </div>
       <TzNote />
-      <div className="grid two">
-        <div className="card"><h2>Pass rate by run (full sheet)</h2><TrendChart data={trend} /></div>
-        <div className="card"><h2>Failing LPs by check — latest run</h2><FailsByCheck data={fails} /></div>
-        <div className="card"><h2>By regulator — latest run</h2><PassFailBars data={bars(latest.byEntity)} /></div>
-        <div className="card"><h2>By language — latest run</h2><PassFailBars data={bars(latest.byLanguage)} /></div>
-        <div className="card"><h2>Median LCP by run</h2><LcpTrend data={lcpTrend} /></div>
+      <ChartsPanel rows={latest.results} trend={trend} lcpTrend={lcpTrend} fails={fails} byEntity={bars(latest.byEntity)} byLanguage={bars(latest.byLanguage)}>
         <div className="card">
           <h2>Failing most often (last {recent.length} full run{recent.length === 1 ? "" : "s"})</h2>
           {worst.length === 0 ? <p className="muted">No failures.</p> : (
@@ -114,7 +106,7 @@ export default async function Overview() {
           )}
           {latest.skippedAu > 0 && <p className="muted" style={{ marginTop: 12 }}>{latest.skippedAu} AU rows skipped (AU IP/proxy required) in the latest run.</p>}
         </div>
-      </div>
+      </ChartsPanel>
       <UrlTable rows={latest.results} title="All URLs — latest full run" />
     </>
   );
