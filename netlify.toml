@@ -3,10 +3,12 @@
   publish = ".next"
 
 [build.environment]
-  # These are plain config values (branch name, workflow filename, dashboard
-  # username, repo name), not secrets. Their defaults appear literally in source and docs,
-  # which trips Netlify's secrets scanner.
-  SECRETS_SCAN_OMIT_KEYS = "RESULTS_BRANCH,WORKFLOW_FILE,DASHBOARD_USER,GITHUB_REPO"
+  # Plain config values (branch, workflow file, dashboard username, repo name,
+  # data dir), not secrets. Their defaults appear literally in source and docs.
+  SECRETS_SCAN_OMIT_KEYS = "RESULTS_BRANCH,WORKFLOW_FILE,DASHBOARD_USER,GITHUB_REPO,DATA_DIR"
+  # The generated edge bundle contains vendored Next runtime code that the
+  # scanner false-positives on. Source files are still scanned.
+  SECRETS_SCAN_OMIT_PATHS = ".netlify/edge-functions/**"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
