@@ -5,7 +5,7 @@
 [build.environment]
   # Plain config values (branch, workflow file, dashboard username, repo name,
   # data dir), not secrets. Their defaults appear literally in source and docs.
-  SECRETS_SCAN_OMIT_KEYS = "RESULTS_BRANCH,WORKFLOW_FILE,DASHBOARD_USER,GITHUB_REPO,DATA_DIR"
+  SECRETS_SCAN_OMIT_KEYS = "RESULTS_BRANCH,WORKFLOW_FILE,WORKFLOW_REF,DASHBOARD_USER,GITHUB_REPO,DATA_DIR"
   # The generated edge bundle contains vendored Next runtime code that the
   # scanner false-positives on. Source files are still scanned.
   SECRETS_SCAN_OMIT_PATHS = ".netlify/edge-functions/**"
