@@ -35,11 +35,11 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
       <style>{css}</style>
       <div className="lg-brand">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={LOGO_URL} alt="IC Markets" />
+        <img src={LOGO_URL} alt="IC" />
         <span className="lg-tag">LP QA</span>
       </div>
       <LoginForm next={next} error={!!sp.error} />
-      <div className="lg-foot">IC Markets · internal tool</div>
+      <div className="lg-foot">IC · internal tool</div>
     </div>
   );
 }

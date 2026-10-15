@@ -48,6 +48,12 @@ function Details({ row }: { row: Row }) {
           ))}
         </div>
       )}
+      {row.tested_url && (
+        <div className="muted" style={{ fontSize: 12.5, overflowWrap: "anywhere", margin: "0 0 8px" }}>
+          Opened: {row.tested_url}
+          {row.final_url && row.final_url.split("#")[0] !== row.tested_url.split("#")[0] && <><br />Landed on: {row.final_url}</>}
+        </div>
+      )}
       <div className="details-foot"><Link href={`/url?u=${encodeURIComponent(row.url)}`}>History for this LP</Link> · <Link href="/checks">What the checks mean</Link></div>
     </div>
   );

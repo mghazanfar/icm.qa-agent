@@ -17,9 +17,9 @@ export default function Shell({ children }: { children: React.ReactNode }) {
       <a className="skiplink" href="#main">Skip to content</a>
       <header className="top">
         <div className="top-in">
-          <Link className="brand" href="/" aria-label="IC Markets LP QA - home">
+          <Link className="brand" href="/" aria-label="IC LP QA - home">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={LOGO_URL} alt="IC Markets" height={30} />
+            <img src={LOGO_URL} alt="IC" height={30} />
             <span className="brand-sub">LP QA</span>
           </Link>
           <NavLinks />
@@ -36,7 +36,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
         <LiveRunBanner />
         {children}
       </main>
-      <footer className="foot">IC Markets LP QA · internal tool · times are Dubai time (GST)</footer>
+      <footer className="foot">IC LP QA · internal tool · times are Dubai time (GST)</footer>
     </>
   );
 }

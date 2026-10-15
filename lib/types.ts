@@ -5,6 +5,8 @@ export type Metrics = { lcp: number | null; ttfb: number; load: number; cls: num
 export type Row = {
   product: string; language: string; label: string; url: string; entity: string;
   status: "pass" | "fail"; checks: Record<string, Check>; metrics: Metrics | null;
+  /** URL actually opened (the sheet URL plus the sample tracking parameters) and the URL the browser ended on */
+  tested_url?: string | null; final_url?: string | null;
 };
 export type RunSummary = {
   id: string; startedAt: string; finishedAt: string; trigger: string; mode: string; source: string;
@@ -21,6 +23,7 @@ export type Run = RunSummary & { skippedAuRows: { label: string; url: string }[]
 
 export const CHECK_LABELS: Record<string, string> = {
   gtm: "GTM integration", tracking: "Tracking", cta_endpoint: "CTA endpoints", cta_params: "CTA tracking",
-  consistency: "Consistency", spelling: "Spelling", performance: "Load time", mobile: "Mobile", lag: "Lag", load: "Page load",
+  consistency: "Consistency", spelling: "Spelling", performance: "Load time", mobile: "Mobile", lag: "Lag",
+  redirect: "Redirect", param_pass: "Param pass-through", load: "Page load",
 };
 export const CHECK_ORDER = Object.keys(CHECK_LABELS);

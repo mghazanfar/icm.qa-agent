@@ -112,6 +112,30 @@ export const CHECKS_INFO: Record<string, CheckInfo> = {
     ],
     grey: "Not normally grey.",
   },
+  redirect: {
+    title: "Redirect",
+    short: "The page opens exactly at the URL from the sheet.",
+    verifies: "The agent opens the sheet URL (with sample tracking parameters) and compares it with the URL the browser ends on, including HTTP, meta and script redirects.",
+    pass: [
+      "The final URL has the same host and path as the requested one.",
+      "No tracking parameter was dropped on the way.",
+    ],
+    fails: "The page lands on another host or path (the redirect chain with status codes is shown), or a redirect drops the tracking parameters.",
+    amber: "Only the scheme or a trailing slash changed (a minor redirect), listed with the chain.",
+    grey: "Not normally grey.",
+  },
+  param_pass: {
+    title: "Param pass-through",
+    short: "Ad tracking parameters reach the register / login links.",
+    verifies:
+      "Before each page is opened, sample ad parameters (utm_*, camp, placement ...) are appended to its URL. Every register / login CTA is then checked for the parameters that must be forwarded, as it is on the page and after a press / click (for links that are decorated on click).",
+    pass: [
+      "Every CTA carries the required parameters with the value that was sent (for example camp=91180 on normal LPs).",
+      "Other forwarded and not forwarded parameters are listed in the detail.",
+    ],
+    fails: "A CTA lost, or changed the value of, a required parameter.",
+    grey: "No tracking domains, pages without a CTA (checks 3 and 4 report that), or the feature is switched off.",
+  },
   load: {
     title: "Page load",
     short: "The page opened at all.",
