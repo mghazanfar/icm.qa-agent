@@ -128,12 +128,13 @@ export const CHECKS_INFO: Record<string, CheckInfo> = {
     title: "Param pass-through",
     short: "Ad tracking parameters reach the register / login links.",
     verifies:
-      "Before each page is opened, sample ad parameters (utm_*, camp, placement ...) are appended to its URL. Every register / login CTA is then checked for the parameters that must be forwarded, as it is on the page and after a press / click (for links that are decorated on click).",
+      "Each page is opened once per ad platform (The Trade Desk, AdRoll, Adform, Meta / X style and LinkedIn links) with that platform's sample parameters appended. Every register / login CTA is then checked for the parameters the platform must forward (for example camp), as it is on the page and after a press / click.",
     pass: [
-      "Every CTA carries the required parameters with the value that was sent (for example camp=91180 on normal LPs).",
-      "Other forwarded and not forwarded parameters are listed in the detail.",
+      "For every platform, every CTA carries the required parameters with the value that was sent (camp for The Trade Desk and AdRoll).",
+      "Platforms with nothing required are only listed in the detail.",
     ],
-    fails: "A CTA lost, or changed the value of, a required parameter.",
+    fails: "A CTA lost, or changed the value of, a parameter a platform must forward. The platform is named in the detail.",
+    amber: "A platform could not be tested (for example its page load timed out).",
     grey: "No tracking domains, pages without a CTA (checks 3 and 4 report that), or the feature is switched off.",
   },
   load: {
