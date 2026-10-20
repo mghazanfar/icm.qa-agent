@@ -43,6 +43,7 @@ export const CHECKS_INFO: Record<string, CheckInfo> = {
     pass: [
       "Each CTA responds with HTTP < 400 on an IC Markets host.",
       'Links with href="#" (dropdowns, quizzes) are not CTAs but are click-tested: they must open something.',
+      "Vietnam, China and Japan pages: CTAs may point to the page's new (rotated) domain.",
     ],
     fails: "There is no CTA, a CTA is broken / unreachable / points to a non-IC host, or a # button does nothing.",
     grey: "Not normally grey.",
@@ -95,7 +96,7 @@ export const CHECKS_INFO: Record<string, CheckInfo> = {
     verifies: "The page is rendered as an iPhone 14 (390x844) and its layout is inspected.",
     pass: [
       "A header/menu or top logo row is present, with a visible logo.",
-      "At least one section/card is present.",
+      "At least one section/card is present (not required on the teaser pages, which have none by design).",
       "No sideways scrolling.",
       "No visible text colliding with other text (overlays and scroll animations are ignored).",
     ],
@@ -118,6 +119,7 @@ export const CHECKS_INFO: Record<string, CheckInfo> = {
     verifies: "The agent opens the sheet URL (with sample tracking parameters) and compares it with the URL the browser ends on, including HTTP, meta and script redirects.",
     pass: [
       "The final URL has the same host and path as the requested one.",
+      "Vietnam, China and Japan pages: moving to a NEW domain is expected (domains are rotated on purpose) as long as the landing page is the same endpoint.",
       "No tracking parameter was dropped on the way.",
     ],
     fails: "The page lands on another host or path (the redirect chain with status codes is shown), or a redirect drops the tracking parameters.",
@@ -126,16 +128,16 @@ export const CHECKS_INFO: Record<string, CheckInfo> = {
   },
   param_pass: {
     title: "Param pass-through",
-    short: "Ad tracking parameters reach the register / login links.",
+    short: "Ad tracking parameters reach the register / sign-up links.",
     verifies:
-      "Each page is opened once per ad platform (The Trade Desk, AdRoll, Adform, Meta / X style and LinkedIn links) with that platform's sample parameters appended. Every register / login CTA is then checked for the parameters the platform must forward (for example camp), as it is on the page and after a press / click.",
+      "Each page is opened once per ad platform (The Trade Desk, AdRoll, Adform, Meta / X style and LinkedIn links) with that platform's sample parameters appended, including a camp id. Every sign-up style CTA (Register, Start trading, Get started ...) is then checked for the camp id, as it is on the page and after a press / click. Login buttons are not checked.",
     pass: [
-      "For every platform, every CTA carries the required parameters with the value that was sent (camp for The Trade Desk and AdRoll).",
-      "Platforms with nothing required are only listed in the detail.",
+      "For every platform, every sign-up CTA carries the camp id with the value that was sent.",
+      "EU and AU pages are not checked: they never carry a camp id. Kenya (CMA) is checked from 10 November 2026.",
     ],
-    fails: "A CTA lost, or changed the value of, a parameter a platform must forward. The platform is named in the detail.",
-    amber: "A platform could not be tested (for example its page load timed out).",
-    grey: "No tracking domains, pages without a CTA (checks 3 and 4 report that), or the feature is switched off.",
+    fails: "A sign-up CTA lost, or changed the value of, the camp id. The platform is named in the detail.",
+    amber: "A known issue (for example a frontend fix is pending on that page), or a platform that could not be tested (for example its page load timed out).",
+    grey: "EU / AU pages, Kenya before 10 November 2026, no tracking domains, pages without a sign-up CTA, or the feature is switched off.",
   },
   load: {
     title: "Page load",
