@@ -88,6 +88,7 @@ export const CHECKS_INFO: Record<string, CheckInfo> = {
       "Full load <= 5 s",
       "Best of up to 3 measurements for pages that fail the first one.",
     ],
+    amber: "Borderline: a metric is over its limit but within 1.5x of it. Timings on a shared runner swing from run to run, so only a clearly slow page (more than 1.5x the limit) fails. Pages tested through a VPN are never failed here; their numbers are only a hint.",
     grey: "Not normally grey.",
   },
   mobile: {
@@ -111,6 +112,7 @@ export const CHECKS_INFO: Record<string, CheckInfo> = {
       "Interaction delay (INP) <= 200 ms (+10% margin)",
       "Layout shift (CLS) < 0.1",
     ],
+    amber: "Borderline: slightly over a limit (for example layout shift between 0.1 and 0.25). Clearly bad values fail. Pages tested through a VPN are never failed here.",
     grey: "Not normally grey.",
   },
   redirect: {
@@ -130,14 +132,15 @@ export const CHECKS_INFO: Record<string, CheckInfo> = {
     title: "Param pass-through",
     short: "Ad tracking parameters reach the register / sign-up links.",
     verifies:
-      "Each page is opened once per ad platform (The Trade Desk, AdRoll, Adform, Meta / X style and LinkedIn links) with that platform's sample parameters appended, including a camp id. Every sign-up style CTA (Register, Start trading, Get started ...) is then checked for the camp id, as it is on the page and after a press / click. Login buttons are not checked.",
+      "Each page is opened once per ad platform (The Trade Desk, AdRoll, Adform, Twitter / X, Meta and LinkedIn links) with that platform's sample parameters appended, including a camp id. Every sign-up style CTA (Register, Start trading, Get started ...) is then checked for the camp id, as it is on the page and after a press / click. Login buttons are not checked.",
     pass: [
       "For every platform, every sign-up CTA carries the camp id with the value that was sent.",
-      "EU and AU pages are not checked: they never carry a camp id. Kenya (CMA) is checked from 10 November 2026.",
+      "EU and AU pages never carry a camp id, so there every OTHER tracking parameter of the platform (utm_*, placement ...) must be on the CTAs instead.",
+      "Kenya (CMA) is checked from 10 November 2026.",
     ],
     fails: "A sign-up CTA lost, or changed the value of, the camp id. The platform is named in the detail.",
     amber: "A known issue (for example a frontend fix is pending on that page), or a platform that could not be tested (for example its page load timed out).",
-    grey: "EU / AU pages, Kenya before 10 November 2026, no tracking domains, pages without a sign-up CTA, or the feature is switched off.",
+    grey: "Kenya before 10 November 2026, no tracking domains, pages without a sign-up CTA, or the feature is switched off.",
   },
   load: {
     title: "Page load",
