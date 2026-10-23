@@ -48,6 +48,7 @@ function Details({ row }: { row: Row }) {
           ))}
         </div>
       )}
+      {row.country && <div className="muted" style={{ fontSize: 12.5, margin: "0 0 6px" }}>Tested from: {row.country}</div>}
       {row.tested_url && (
         <div className="muted" style={{ fontSize: 12.5, overflowWrap: "anywhere", margin: "0 0 8px" }}>
           Opened: {row.tested_url}

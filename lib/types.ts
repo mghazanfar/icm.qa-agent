@@ -7,6 +7,8 @@ export type Row = {
   status: "pass" | "fail"; checks: Record<string, Check>; metrics: Metrics | null;
   /** URL actually opened (the sheet URL plus the sample tracking parameters) and the URL the browser ended on */
   tested_url?: string | null; final_url?: string | null;
+  /** country the row was tested from (US = the runner's own connection, AU / BR = a VPN) */
+  country?: string | null;
 };
 export type RunSummary = {
   id: string; startedAt: string; finishedAt: string; trigger: string; mode: string; source: string;
