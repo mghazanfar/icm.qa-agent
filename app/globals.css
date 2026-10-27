@@ -166,3 +166,12 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 .live-steps .st-failed { background: #C62828; color: #fff; }
 @keyframes livepulse2 { 50% { opacity: .35; } }
 @media (prefers-reduced-motion: reduce) { .live-steps .st-active .st-ico { animation: none; } }
+
+.modal-back { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 16px; background: rgba(0, 26, 2, .55); }
+.modal { width: 100%; max-width: 480px; background: var(--card); color: var(--ink); border-radius: 14px; padding: 22px; box-shadow: 0 20px 60px rgba(0, 26, 2, .45); }
+.modal h2 { margin: 0 0 8px; font-size: 18px; text-transform: none; letter-spacing: 0; }
+.modal p { margin: 0 0 8px; } .modal .muted { color: var(--muted); font-size: 13px; }
+.modal-opt { display: flex; gap: 10px; align-items: flex-start; margin: 14px 0 4px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; cursor: pointer; }
+.modal-opt input { margin-top: 3px; width: 16px; height: 16px; accent-color: var(--green); flex: none; }
+.modal-opt span { display: flex; flex-direction: column; gap: 2px; } .modal-opt small { color: var(--muted); font-size: 12px; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }

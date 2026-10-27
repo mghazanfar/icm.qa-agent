@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
       { status: 501 },
     );
   }
-  const body = (await req.json().catch(() => ({}))) as { url?: string; all?: boolean };
+  const body = (await req.json().catch(() => ({}))) as { url?: string; all?: boolean; includeFalseFlag?: boolean };
   const target = body.all ? "all" : body.url;
   if (!target || (target !== "all" && !/^https?:\/\//.test(target))) {
     return NextResponse.json({ ok: false, error: "Provide { all: true } or { url }" }, { status: 400 });
@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
   const r = await fetch(`https://api.github.com/repos/${repo}/actions/workflows/${wf}/dispatches`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" },
-    body: JSON.stringify({ ref: process.env.WORKFLOW_REF || "main", inputs: { target, dry_run: "false", trigger: "dashboard" } }),
+    body: JSON.stringify({ ref: process.env.WORKFLOW_REF || "main", inputs: { target, dry_run: "false", trigger: "dashboard", include_false_flag: body.includeFalseFlag === false ? "false" : "true" } }),
   });
   if (!r.ok) {
     let hint = "";
@@ -38,5 +38,5 @@ export async function POST(req: NextRequest) {
     }
     return NextResponse.json({ ok: false, error: `GitHub refused the dispatch (${r.status}).${hint}` }, { status: 502 });
   }
-  return NextResponse.json({ ok: true, message: target === "all" ? "Full-sheet run queued." : "Run queued for this URL." });
+  return NextResponse.json({ ok: true, message: target === "all" ? (body.includeFalseFlag === false ? "Full-sheet run queued (without the false-flag check)." : "Full-sheet run queued.") : "Run queued for this URL." });
 }
