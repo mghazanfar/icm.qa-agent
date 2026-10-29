@@ -1,5 +1,5 @@
 import { getIndex } from "./data";
-import { buildLive, medianSeconds, type GhJob, type GhRun, type LiveCore } from "./live-logic";
+import { buildLive, medianSeconds, type GhJob, type GhRun, type LiveCore, type Progress } from "./live-logic";
 
 const API = () => process.env.GITHUB_API_URL || "https://api.github.com"; // override only for local testing
 const REPO = () => process.env.GITHUB_REPO || "ICMarkets/icm.qa-agent";
@@ -28,6 +28,17 @@ async function typicalSeconds(): Promise<number> {
   }
 }
 
+// The runner force-pushes progress.json to the qa-progress branch while it tests (see progress.py); null when there is none.
+async function readProgress(repo: string): Promise<Progress | null> {
+  try {
+    const r = await fetch(`${API()}/repos/${repo}/contents/progress.json?ref=qa-progress`, {
+      headers: { ...gh(), Accept: "application/vnd.github.raw+json" }, cache: "no-store" });
+    return r.ok ? ((await r.json()) as Progress) : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function getLiveState(): Promise<LiveState> {
   if (!token()) return { configured: false, active: false };
   if (cache && Date.now() - cache.at < 4000) return cache.value;
@@ -44,7 +55,9 @@ export async function getLiveState(): Promise<LiveState> {
       const jr = await fetch(`${API()}/repos/${repo}/actions/runs/${live.id}/jobs`, { headers: gh(), cache: "no-store" });
       const jobs = jr.ok ? (((await jr.json()).jobs ?? []) as GhJob[]) : [];
       const typical = await typicalSeconds();
-      const core = buildLive(live, jobs, typical, Date.now());
+      const qaJob = jobs.find((j) => j.name === "qa");
+      const testing = qaJob?.steps?.some((st) => st.name === "Run QA agent" && st.status === "in_progress");
+      const core = buildLive(live, jobs, typical, Date.now(), testing ? await readProgress(repo) : null);
       value = { ...value, ...core, runId: live.id, url: live.html_url, startedAt: live.created_at, typicalSec: Math.round(typical) };
     }
   } catch {

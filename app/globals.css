@@ -175,3 +175,6 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 .modal-opt input { margin-top: 3px; width: 16px; height: 16px; accent-color: var(--green); flex: none; }
 .modal-opt span { display: flex; flex-direction: column; gap: 2px; } .modal-opt small { color: var(--muted); font-size: 12px; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+
+.live-count { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 8px 0 2px; font-size: 13px; }
+.live-count .lc-pass { color: var(--green-text); font-weight: 600; } .live-count .lc-fail { color: #C62828; font-weight: 600; }

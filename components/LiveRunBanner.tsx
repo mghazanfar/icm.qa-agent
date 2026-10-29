@@ -70,6 +70,13 @@ export default function LiveRunBanner() {
           {live.url && <a className="live-link" href={live.url} target="_blank" rel="noreferrer">View in GitHub ↗</a>}
         </div>
         <div className="live-bar" aria-hidden="true"><i style={{ width: `${live.percent ?? 5}%` }} /></div>
+        {live.progress && (
+          <div className="live-count" aria-label="Pages tested so far">
+            <span><b>{live.progress.done}</b> of {live.progress.total} pages tested</span>
+            <span className="lc-pass">✓ {live.progress.passed} passed</span>
+            <span className="lc-fail">✕ {live.progress.failed} failing so far</span>
+          </div>
+        )}
         <div className="live-foot">
           <span><b>{live.phase}</b></span>
           <span>

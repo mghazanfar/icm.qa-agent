@@ -5,12 +5,14 @@ export type GhJob = { name: string; status: string; conclusion: string | null; s
 export type GhRun = { id: number; status: string; conclusion: string | null; event: string; display_title: string; created_at: string; html_url: string; updated_at: string };
 
 export type StepView = { label: string; state: "done" | "active" | "pending" | "failed" };
+export type Progress = { run_id: string; total: number; done: number; passed: number; failed: number; at?: string };
 export type LiveCore = {
   active: boolean; skipped: boolean;
   trigger: "scheduled" | "manual" | "dashboard" | "other"; target: string;
   percent: number; phase: string; steps: StepView[];
   etaAt?: string; remainingSec?: number; overrun?: boolean;
   stepStartedAt?: string;
+  progress?: { done: number; total: number; passed: number; failed: number };   // pages tested so far (the runner reports it while it works)
 };
 
 export function parseTitle(title: string, event: string): { trigger: LiveCore["trigger"]; target: string } {
@@ -42,7 +44,7 @@ function groupState(steps: GhStep[], match: (n: string) => boolean): StepView["s
   return mine.some((s) => s.status === "completed") ? "active" : "pending";
 }
 
-export function buildLive(run: GhRun, jobs: GhJob[], typicalSec: number, nowMs: number): LiveCore {
+export function buildLive(run: GhRun, jobs: GhJob[], typicalSec: number, nowMs: number, progress?: Progress | null): LiveCore {
   const { trigger, target } = parseTitle(run.display_title, run.event);
   const gate = jobs.find((j) => j.name === "gate");
   const qa = jobs.find((j) => j.name === "qa");
@@ -62,6 +64,7 @@ export function buildLive(run: GhRun, jobs: GhJob[], typicalSec: number, nowMs: 
   const typical = single ? 120 : typicalSec;                 // a one-URL run is much shorter than a full run
   let percent = 2, phase = "Checking the schedule", remaining = typical + 90;
   let elapsedMain = 0;
+  let shown: LiveCore["progress"];
   if (gate && gate.status === "completed" && !qa) { percent = 4; phase = "Waiting for a runner"; remaining = typical + 90; }
   if (qa && qa.status === "queued") { percent = 4; phase = "Waiting for a runner"; }
   else if (qa && (!main || main.status === "pending" || main.status === "queued")) { percent = 8; phase = "Preparing the runner (installing browsers)"; remaining = typical + 60; }
@@ -70,12 +73,20 @@ export function buildLive(run: GhRun, jobs: GhJob[], typicalSec: number, nowMs: 
     percent = Math.round(10 + 82 * Math.min(elapsedMain / typical, 0.98));
     phase = "Testing landing pages";
     remaining = Math.max(30, typical - elapsedMain) + 40;
+    if (progress && progress.total > 0 && progress.done > 0 && String(progress.run_id) === String(run.id)) {
+      // real numbers from the runner: pages tested so far, and an estimate from the speed so far
+      const done = Math.min(progress.done, progress.total), frac = done / progress.total;
+      percent = Math.round(10 + 82 * Math.min(frac, 0.99));
+      phase = `Testing landing pages: ${done} of ${progress.total} done · ${progress.passed} passed · ${progress.failed} failing so far`;
+      remaining = Math.max(30, (elapsedMain / done) * (progress.total - done)) + 40;
+      shown = { done, total: progress.total, passed: progress.passed, failed: progress.failed };
+    }
   } else if (main && main.status === "completed" && save && save.status !== "completed") { percent = 94; phase = "Saving the results"; remaining = 25; }
   else if (main && main.status === "completed") { percent = 97; phase = "Finishing up"; remaining = 15; }
 
-  const overrun = elapsedMain > typical * 1.15;
+  const overrun = !shown && elapsedMain > typical * 1.15;
   return { ...base, active: true, skipped: false, percent, phase, steps, remainingSec: Math.round(remaining),
-           etaAt: new Date(nowMs + remaining * 1000).toISOString(), overrun, stepStartedAt: main?.started_at ?? undefined };
+           etaAt: new Date(nowMs + remaining * 1000).toISOString(), overrun, stepStartedAt: main?.started_at ?? undefined, progress: shown };
 }
 
 export function medianSeconds(durations: number[], fallback = 900): number {
